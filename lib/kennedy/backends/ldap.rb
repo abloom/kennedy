@@ -14,7 +14,11 @@ module Kennedy
         @base = args[:base] || raise(ArgumentError, "Base must be given as :base")
         @filter = lambda { raise(ArgumentError, "Set a filter block on this object using the 'filter' writer") }
       end
-
+      
+      # Authenticates the given credentials against LDAP
+      # @param [String] identifier The identifier to filter on
+      # @param [String] password The password to use
+      # @return [true, false] A boolean indicating authentication success
       def authenticate(identifier, password)
         filter_string = @filter.call(identifier)
         !!ldap_conn.bind_as(:filter => filter_string, :password => password)
