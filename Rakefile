@@ -14,6 +14,7 @@ begin
     gem.add_development_dependency "maruku"
     gem.add_development_dependency "yard"
     gem.add_dependency "ruby-net-ldap"
+    gem.add_dependency "json"
   end
   Jeweler::GemcutterTasks.new
 rescue LoadError

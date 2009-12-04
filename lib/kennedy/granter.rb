@@ -15,6 +15,7 @@ module Kennedy
       @backend = args[:backend] || raise(ArgumentError, "Authentication backend must be given as :backend")
     end
     
+    # Authenticates the given credentials against the current backend
     # @param [Hash] args The arguments to authenticate with
     # @option args [String] :identifier The identifier (email address, for example) to use for authentication
     # @option args [String] :password The password to use for authentication
@@ -23,6 +24,7 @@ module Kennedy
       !!@backend.authenticate(args[:identifier], args[:password])
     end
     
+    # Generates a ticket object to pass back to clients requesting authentication
     # @param [Hash] args The arguments to generate the ticket with
     # @option args [String] :identifier The identifier (email address, for example) the ticket grants access for
     # @return [Kennedy::Ticket] A Kennedy::Ticket object
@@ -34,7 +36,7 @@ module Kennedy
   private
 
     def new_ticket(identifier)
-      Kennedy::Ticket.new(:identifier => identifier)
+      Kennedy::Ticket.create(:identifier => identifier, :iv => @iv, :passphrase => @passphrase)
     end
 
   end # Granter

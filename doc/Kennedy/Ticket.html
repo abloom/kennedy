@@ -76,10 +76,121 @@ person can access a service
 <div class="tags">
   
 </div>
+  <h2>Constant Summary</h2>
+  
+    <dl class="constants">
+      
+        <dt id="DefaultExpiry-constant ">DefaultExpiry =
+            <span class="summary_desc">
+In seconds.
+
+</span>
+        </dt>
+        <dd><pre class="code"><span class='integer val'>120</span>
+</pre></dd>
+      
+    </dl>
+  
+
+
+  <h2>Attribute Summary</h2>
+  <ul class="summary">
+    
+      <li class="public ">
+  <span class="summary_signature"><a title="#identifier (instance method)" href="#identifier-instance_method">- (Object) <strong>identifier</strong> </a>
+  
+  </span>
+  
+    <span class="note title readonly">readonly</span>
+    
+  
+  
+  
+  
+
+  
+    <span class="summary_desc">
+Returns the value of attribute <tt>identifier</tt>.
+
+</span>
+  
+</li>
+
+    
+  </ul>
 
 
   <h2>Method Summary</h2>
   <ul class="summary">
+    
+      <li class="public ">
+  <span class="summary_signature"><a title="create (class method)" href="#create-class_method">+ (Object) <strong>create</strong>(args = {}) </a>
+  
+  </span>
+  
+  
+  
+  
+
+  
+    <span class="summary_desc">
+Creates a new ticket with the given arguments.
+
+</span>
+  
+</li>
+
+    
+      <li class="public ">
+  <span class="summary_signature"><a title="from_encrypted (class method)" href="#from_encrypted-class_method">+ (Object) <strong>from_encrypted</strong>(args = {}) </a>
+  
+  </span>
+  
+  
+  
+  
+
+  
+    <span class="summary_desc">
+Decrypts a ticket from the given arguments.
+
+</span>
+  
+</li>
+
+    
+      <li class="public ">
+  <span class="summary_signature"><a title="#decrypt (instance method)" href="#decrypt-instance_method">- (Object) <strong>decrypt</strong>(data) </a>
+  
+  </span>
+  
+  
+  
+  
+
+  
+    <span class="summary_desc">
+Decrypts the given ticket data.
+
+</span>
+  
+</li>
+
+    
+      <li class="public ">
+  <span class="summary_signature"><a title="#expired? (instance method)" href="#expired%3F-instance_method">- (Object) <strong>expired?</strong> </a>
+  
+  </span>
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"></span>
+  
+</li>
+
     
       <li class="public ">
   <span class="summary_signature"><a title="#initialize (instance method)" href="#initialize-instance_method">- (Ticket) <strong>initialize</strong>(args = {}) </a>
@@ -93,6 +204,25 @@ person can access a service
   
     <span class="summary_desc">
 A new instance of <tt>Ticket</tt>.
+
+</span>
+  
+</li>
+
+    
+      <li class="public ">
+  <span class="summary_signature"><a title="#to_encrypted (instance method)" href="#to_encrypted-instance_method">- (String) <strong>to_encrypted</strong> </a>
+  
+  </span>
+  
+  
+  
+  
+
+  
+    <span class="summary_desc">
+Generates an encrypted chunk of JSON with the identifier and expiration
+time for this ticket encoded in.
 
 </span>
   
@@ -115,6 +245,183 @@ A new instance of <tt>Ticket</tt>.
   <div class="discussion">
     <p>
 A new instance of <tt>Ticket</tt>
+</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <h3>Parameters:</h3>
+<ul class="param">
+  
+    <li>
+      
+        <span class='type'>(<tt>Hash</tt>)</span>
+      
+      
+        <span class='name'>args</span>
+      
+      
+        <em class="default">(defaults to: <tt>{}</tt>)</em>
+      
+      
+        &mdash;
+        
+The arguments to construct the ticket with
+
+
+      
+    </li>
+  
+</ul>
+
+  
+    
+    
+    <h3>Options Hash (<tt>args</tt>):</h3>
+    <ul class="option">
+      
+        <li>
+          <span class="type">(<tt>String</tt>)</span>
+          <span class="name">:iv</span>
+          <span class="default">
+            
+              <span class="na">N/A</span>
+            
+          </span>
+          &mdash;
+An iv to use to encrypt and decrypt the ticket
+
+
+        </tr>
+      
+        <li>
+          <span class="type">(<tt>String</tt>)</span>
+          <span class="name">:passphrase</span>
+          <span class="default">
+            
+              <span class="na">N/A</span>
+            
+          </span>
+          &mdash;
+A passphrase to encrypt and decrypt the ticket
+
+
+        </tr>
+      
+    </ul>
+  
+<h3>Returns:</h3>
+<ul class="return">
+  
+    <li>
+      
+        <span class='type'>(<tt><a title="Ticket" href="">Ticket</a></tt>)</span>
+      
+      
+      
+      
+        &mdash;
+        
+a new instance of <tt>Ticket</tt>
+
+
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+47
+48
+49
+50
+51</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/kennedy/ticket.rb', line 47</span>
+
+<span class='def def kw'>def</span> <span class='initialize identifier id'>initialize</span><span class='lparen token'>(</span><span class='args identifier id'>args</span> <span class='assign token'>=</span> <span class='lbrace token'>{</span><span class='rbrace token'>}</span><span class='rparen token'>)</span>
+  <span class='@iv ivar id'>@iv</span> <span class='assign token'>=</span> <span class='args identifier id'>args</span><span class='lbrack token'>[</span><span class='symbol val'>:iv</span><span class='rbrack token'>]</span> <span class='orop op'>||</span> <span class='raise identifier id'>raise</span><span class='lparen token'>(</span><span class='ArgumentError constant id'>ArgumentError</span><span class='comma token'>,</span> <span class='string val'>&quot;Ticket encryption IV must be given as :iv&quot;</span><span class='rparen token'>)</span>
+  <span class='@passphrase ivar id'>@passphrase</span> <span class='assign token'>=</span> <span class='args identifier id'>args</span><span class='lbrack token'>[</span><span class='symbol val'>:passphrase</span><span class='rbrack token'>]</span> <span class='orop op'>||</span> <span class='raise identifier id'>raise</span><span class='lparen token'>(</span><span class='ArgumentError constant id'>ArgumentError</span><span class='comma token'>,</span> <span class='string val'>&quot;Ticket encryption passphrase must be given as :passphrase&quot;</span><span class='rparen token'>)</span>
+  <span class='@expiry ivar id'>@expiry</span> <span class='assign token'>=</span> <span class='args identifier id'>args</span><span class='lbrack token'>[</span><span class='symbol val'>:expiry</span><span class='rbrack token'>]</span> <span class='orop op'>||</span> <span class='DefaultExpiry constant id'>DefaultExpiry</span>
+<span class='end end kw'>end</span>
+</pre>
+    </td>
+  </tr>
+</table>
+</div>
+  
+</div>
+
+  <div id="attr_details">
+    <h2>Attribute Details</h2>
+    
+      
+      <span id=""></span>
+      <span id="identifier-instance_method"></span>
+      <div class="method_details first">
+  <p class="signature first" id="identifier-instance_method">
+  
+    - (<tt>Object</tt>) <strong>identifier</strong>  <span class="extras">(readonly)</span>
+  
+
+  
+</p><div class="docstring">
+  <div class="discussion">
+    <p>
+Returns the value of attribute <tt>identifier</tt>
+</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+12
+13
+14</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/kennedy/ticket.rb', line 12</span>
+
+<span class='def def kw'>def</span> <span class='identifier identifier id'>identifier</span>
+  <span class='@identifier ivar id'>@identifier</span>
+<span class='end end kw'>end</span>
+</pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+
+  <div id="method_details">
+    <h2>Method Details</h2>
+    
+      <div class="method_details first">
+  <p class="signature first" id="create-class_method">
+  
+    + (<tt>Object</tt>) <strong>create</strong>(args = {}) 
+  
+
+  
+</p><div class="docstring">
+  <div class="discussion">
+    <p>
+Creates a new ticket with the given arguments
 </p>
 
 
@@ -165,21 +472,354 @@ An identifier to use in the ticket
 
         </tr>
       
+        <li>
+          <span class="type">(<tt>String</tt>)</span>
+          <span class="name">:iv</span>
+          <span class="default">
+            
+              <span class="na">N/A</span>
+            
+          </span>
+          &mdash;
+An iv to use to encrypt and decrypt the ticket
+
+
+        </tr>
+      
+        <li>
+          <span class="type">(<tt>String</tt>)</span>
+          <span class="name">:passphrase</span>
+          <span class="default">
+            
+              <span class="na">N/A</span>
+            
+          </span>
+          &mdash;
+A passphrase to encrypt and decrypt the ticket
+
+
+        </tr>
+      
+        <li>
+          <span class="type">(<tt>String</tt>)</span>
+          <span class="name">:expiry</span>
+          <span class="default">
+            
+              <span class="na">N/A</span>
+            
+          </span>
+          &mdash;
+A length of time in seconds for which this ticket is valid after
+to_encrypted is called
+
+
+        </tr>
+      
     </ul>
   
-<h3>Returns:</h3>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+25
+26
+27
+28
+29
+30</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/kennedy/ticket.rb', line 25</span>
+
+<span class='def def kw'>def</span> <span class='self self kw'>self</span><span class='dot token'>.</span><span class='create identifier id'>create</span><span class='lparen token'>(</span><span class='args identifier id'>args</span> <span class='assign token'>=</span> <span class='lbrace token'>{</span><span class='rbrace token'>}</span><span class='rparen token'>)</span>
+  <span class='identifier identifier id'>identifier</span> <span class='assign token'>=</span> <span class='args identifier id'>args</span><span class='lbrack token'>[</span><span class='symbol val'>:identifier</span><span class='rbrack token'>]</span> <span class='orop op'>||</span> <span class='raise identifier id'>raise</span><span class='lparen token'>(</span><span class='ArgumentError constant id'>ArgumentError</span><span class='comma token'>,</span> <span class='string val'>&quot;Ticket identifier must be given as :identifier&quot;</span><span class='rparen token'>)</span>
+  <span class='ticket identifier id'>ticket</span> <span class='assign token'>=</span> <span class='new identifier id'>new</span><span class='lparen token'>(</span><span class='symbol val'>:iv</span> <span class='assign token'>=</span><span class='gt op'>&gt;</span> <span class='args identifier id'>args</span><span class='lbrack token'>[</span><span class='symbol val'>:iv</span><span class='rbrack token'>]</span><span class='comma token'>,</span> <span class='symbol val'>:passphrase</span> <span class='assign token'>=</span><span class='gt op'>&gt;</span> <span class='args identifier id'>args</span><span class='lbrack token'>[</span><span class='symbol val'>:passphrase</span><span class='rbrack token'>]</span><span class='comma token'>,</span> <span class='symbol val'>:expiry</span> <span class='assign token'>=</span><span class='gt op'>&gt;</span> <span class='args identifier id'>args</span><span class='lbrack token'>[</span><span class='symbol val'>:expiry</span><span class='rbrack token'>]</span><span class='rparen token'>)</span>
+  <span class='ticket identifier id'>ticket</span><span class='dot token'>.</span><span class='identifier identifier id'>identifier</span> <span class='assign token'>=</span> <span class='identifier identifier id'>identifier</span>
+  <span class='ticket identifier id'>ticket</span>
+<span class='end end kw'>end</span>
+</pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <p class="signature " id="from_encrypted-class_method">
+  
+    + (<tt>Object</tt>) <strong>from_encrypted</strong>(args = {}) 
+  
+
+  
+</p><div class="docstring">
+  <div class="discussion">
+    <p>
+Decrypts a ticket from the given arguments
+</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <h3>Parameters:</h3>
+<ul class="param">
+  
+    <li>
+      
+        <span class='type'>(<tt>Hash</tt>)</span>
+      
+      
+        <span class='name'>args</span>
+      
+      
+        <em class="default">(defaults to: <tt>{}</tt>)</em>
+      
+      
+        &mdash;
+        
+The arguments to build the ticket with
+
+
+      
+    </li>
+  
+</ul>
+
+  
+    
+    
+    <h3>Options Hash (<tt>args</tt>):</h3>
+    <ul class="option">
+      
+        <li>
+          <span class="type">(<tt>String</tt>)</span>
+          <span class="name">:data</span>
+          <span class="default">
+            
+              <span class="na">N/A</span>
+            
+          </span>
+          &mdash;
+An encrypted ticket
+
+
+        </tr>
+      
+        <li>
+          <span class="type">(<tt>String</tt>)</span>
+          <span class="name">:iv</span>
+          <span class="default">
+            
+              <span class="na">N/A</span>
+            
+          </span>
+          &mdash;
+An IV to use to decrypt the ticket
+
+
+        </tr>
+      
+        <li>
+          <span class="type">(<tt>String</tt>)</span>
+          <span class="name">:passphrase</span>
+          <span class="default">
+            
+              <span class="na">N/A</span>
+            
+          </span>
+          &mdash;
+A passphrase to use to decrypt the ticket
+
+
+        </tr>
+      
+    </ul>
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+37
+38
+39
+40
+41
+42</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/kennedy/ticket.rb', line 37</span>
+
+<span class='def def kw'>def</span> <span class='self self kw'>self</span><span class='dot token'>.</span><span class='from_encrypted identifier id'>from_encrypted</span><span class='lparen token'>(</span><span class='args identifier id'>args</span> <span class='assign token'>=</span> <span class='lbrace token'>{</span><span class='rbrace token'>}</span><span class='rparen token'>)</span>
+  <span class='data identifier id'>data</span> <span class='assign token'>=</span> <span class='args identifier id'>args</span><span class='lbrack token'>[</span><span class='symbol val'>:data</span><span class='rbrack token'>]</span> <span class='orop op'>||</span> <span class='raise identifier id'>raise</span><span class='lparen token'>(</span><span class='ArgumentError constant id'>ArgumentError</span><span class='comma token'>,</span> <span class='string val'>&quot;Data must be given as :data&quot;</span><span class='rparen token'>)</span>
+  <span class='ticket identifier id'>ticket</span> <span class='assign token'>=</span> <span class='new identifier id'>new</span><span class='lparen token'>(</span><span class='symbol val'>:iv</span> <span class='assign token'>=</span><span class='gt op'>&gt;</span> <span class='args identifier id'>args</span><span class='lbrack token'>[</span><span class='symbol val'>:iv</span><span class='rbrack token'>]</span><span class='comma token'>,</span> <span class='symbol val'>:passphrase</span> <span class='assign token'>=</span><span class='gt op'>&gt;</span> <span class='args identifier id'>args</span><span class='lbrack token'>[</span><span class='symbol val'>:passphrase</span><span class='rbrack token'>]</span><span class='rparen token'>)</span>
+  <span class='ticket identifier id'>ticket</span><span class='dot token'>.</span><span class='decrypt identifier id'>decrypt</span><span class='lparen token'>(</span><span class='data identifier id'>data</span><span class='rparen token'>)</span>
+  <span class='ticket identifier id'>ticket</span>
+<span class='end end kw'>end</span>
+</pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <p class="signature " id="decrypt-instance_method">
+  
+    - (<tt>Object</tt>) <strong>decrypt</strong>(data) 
+  
+
+  
+</p><div class="docstring">
+  <div class="discussion">
+    <p>
+Decrypts the given ticket data
+</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <h3>Parameters:</h3>
+<ul class="param">
+  
+    <li>
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+        <span class='name'>data</span>
+      
+      
+      
+        &mdash;
+        
+The ticket data to decrypt
+
+
+      
+    </li>
+  
+</ul>
+<h3>Raises:</h3>
+<ul class="raise">
+  
+    <li>
+      
+        <span class='type'>(<tt><a title="Kennedy::BadTicketException" href="BadTicketException.html">Kennedy::BadTicketException</a></tt>)</span>
+      
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/kennedy/ticket.rb', line 72</span>
+
+<span class='def def kw'>def</span> <span class='decrypt identifier id'>decrypt</span><span class='lparen token'>(</span><span class='data identifier id'>data</span><span class='rparen token'>)</span>
+  <span class='cipher identifier id'>cipher</span> <span class='assign token'>=</span> <span class='OpenSSL constant id'>OpenSSL</span><span class='colon2 op'>::</span><span class='Cipher constant id'>Cipher</span><span class='colon2 op'>::</span><span class='Cipher constant id'>Cipher</span><span class='dot token'>.</span><span class='new identifier id'>new</span><span class='lparen token'>(</span><span class='string val'>&quot;aes-256-cbc&quot;</span><span class='rparen token'>)</span>
+  <span class='cipher identifier id'>cipher</span><span class='dot token'>.</span><span class='decrypt identifier id'>decrypt</span>
+  <span class='cipher identifier id'>cipher</span><span class='dot token'>.</span><span class='key identifier id'>key</span> <span class='assign token'>=</span> <span class='@passphrase ivar id'>@passphrase</span>
+  <span class='cipher identifier id'>cipher</span><span class='dot token'>.</span><span class='iv identifier id'>iv</span> <span class='assign token'>=</span> <span class='@iv ivar id'>@iv</span>
+  <span class='decrypted identifier id'>decrypted</span> <span class='assign token'>=</span> <span class='cipher identifier id'>cipher</span><span class='dot token'>.</span><span class='update identifier id'>update</span><span class='lparen token'>(</span><span class='data identifier id'>data</span><span class='rparen token'>)</span>
+  <span class='decrypted identifier id'>decrypted</span> <span class='lshft op'>&lt;&lt;</span> <span class='cipher identifier id'>cipher</span><span class='dot token'>.</span><span class='final identifier id'>final</span>
+  <span class='json identifier id'>json</span> <span class='assign token'>=</span> <span class='JSON constant id'>JSON</span><span class='dot token'>.</span><span class='parse identifier id'>parse</span><span class='lparen token'>(</span><span class='decrypted identifier id'>decrypted</span><span class='rparen token'>)</span>
+  <span class='self self kw'>self</span><span class='dot token'>.</span><span class='identifier identifier id'>identifier</span> <span class='assign token'>=</span> <span class='json identifier id'>json</span><span class='lbrack token'>[</span><span class='string val'>'identifier'</span><span class='rbrack token'>]</span>
+  <span class='@expiry ivar id'>@expiry</span> <span class='assign token'>=</span> <span class='Time constant id'>Time</span><span class='dot token'>.</span><span class='parse identifier id'>parse</span><span class='lparen token'>(</span><span class='json identifier id'>json</span><span class='lbrack token'>[</span><span class='string val'>'expiry'</span><span class='rbrack token'>]</span><span class='rparen token'>)</span>
+<span class='rescue rescue kw'>rescue</span> <span class='OpenSSL constant id'>OpenSSL</span><span class='colon2 op'>::</span><span class='Cipher constant id'>Cipher</span><span class='colon2 op'>::</span><span class='CipherError constant id'>CipherError</span> <span class='assign token'>=</span><span class='gt op'>&gt;</span> <span class='e identifier id'>e</span>
+  <span class='raise identifier id'>raise</span> <span class='Kennedy constant id'>Kennedy</span><span class='colon2 op'>::</span><span class='BadTicketException constant id'>BadTicketException</span><span class='comma token'>,</span> <span class='string val'>&quot;Given data was not decryptable&quot;</span>
+<span class='end end kw'>end</span>
+</pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <p class="signature " id="expired?-instance_method">
+  
+    - (<tt>Object</tt>) <strong>expired?</strong> 
+  
+
+  
+</p><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+86
+87
+88</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/kennedy/ticket.rb', line 86</span>
+
+<span class='def def kw'>def</span> <span class='expired? fid id'>expired?</span>
+  <span class='notop op'>!</span><span class='@expiry ivar id'>@expiry</span><span class='dot token'>.</span><span class='nil? fid id'>nil?</span> <span class='andop op'>&amp;&amp;</span> <span class='lparen token'>(</span><span class='@expiry ivar id'>@expiry</span> <span class='lt op'>&lt;</span> <span class='Time constant id'>Time</span><span class='dot token'>.</span><span class='now identifier id'>now</span><span class='rparen token'>)</span>
+<span class='end end kw'>end</span>
+</pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <p class="signature " id="to_encrypted-instance_method">
+  
+    - (<tt>String</tt>) <strong>to_encrypted</strong> 
+  
+
+  
+</p><div class="docstring">
+  <div class="discussion">
+    <p>
+Generates an encrypted chunk of JSON with the identifier and expiration
+time for this ticket encoded in
+</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <h3>Returns:</h3>
 <ul class="return">
   
     <li>
       
-        <span class='type'>(<tt><a title="Ticket" href="">Ticket</a></tt>)</span>
+        <span class='type'>(<tt>String</tt>)</span>
       
       
       
       
         &mdash;
         
-a new instance of <tt>Ticket</tt>
+An encrypted JSON string
 
 
       
@@ -193,27 +833,40 @@ a new instance of <tt>Ticket</tt>
       <pre class="lines">
 
 
-7
-8</pre>
+60
+61
+62
+63
+64
+65
+66
+67
+68</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kennedy/ticket.rb', line 7</span>
+      <pre class="code"><span class="info file"># File 'lib/kennedy/ticket.rb', line 60</span>
 
-<span class='def def kw'>def</span> <span class='initialize identifier id'>initialize</span><span class='lparen token'>(</span><span class='args identifier id'>args</span> <span class='assign token'>=</span> <span class='lbrace token'>{</span><span class='rbrace token'>}</span><span class='rparen token'>)</span>
+<span class='def def kw'>def</span> <span class='to_encrypted identifier id'>to_encrypted</span>
+  <span class='cipher identifier id'>cipher</span> <span class='assign token'>=</span> <span class='OpenSSL constant id'>OpenSSL</span><span class='colon2 op'>::</span><span class='Cipher constant id'>Cipher</span><span class='colon2 op'>::</span><span class='Cipher constant id'>Cipher</span><span class='dot token'>.</span><span class='new identifier id'>new</span><span class='lparen token'>(</span><span class='string val'>&quot;aes-256-cbc&quot;</span><span class='rparen token'>)</span>
+  <span class='cipher identifier id'>cipher</span><span class='dot token'>.</span><span class='encrypt identifier id'>encrypt</span>
+  <span class='cipher identifier id'>cipher</span><span class='dot token'>.</span><span class='key identifier id'>key</span> <span class='assign token'>=</span> <span class='@passphrase ivar id'>@passphrase</span>
+  <span class='cipher identifier id'>cipher</span><span class='dot token'>.</span><span class='iv identifier id'>iv</span> <span class='assign token'>=</span> <span class='@iv ivar id'>@iv</span>
+  <span class='encrypted identifier id'>encrypted</span> <span class='assign token'>=</span> <span class='cipher identifier id'>cipher</span><span class='dot token'>.</span><span class='update identifier id'>update</span><span class='lparen token'>(</span><span class='to_expiring_json identifier id'>to_expiring_json</span><span class='rparen token'>)</span>
+  <span class='encrypted identifier id'>encrypted</span> <span class='lshft op'>&lt;&lt;</span> <span class='cipher identifier id'>cipher</span><span class='dot token'>.</span><span class='final identifier id'>final</span>
+  <span class='encrypted identifier id'>encrypted</span>
 <span class='end end kw'>end</span>
 </pre>
     </td>
   </tr>
 </table>
 </div>
-  
-</div>
-
+    
+  </div>
 
 </div>
     
     <div id="footer">
-  Generated on Fri Dec  4 14:38:02 2009 by 
+  Generated on Fri Dec  4 15:35:53 2009 by 
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool">yard</a>
   0.4.0 (ruby-1.8.7).
 </div>
