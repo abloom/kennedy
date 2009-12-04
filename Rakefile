@@ -5,8 +5,8 @@ begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
     gem.name = "kennedy"
-    gem.summary = %Q{A simple single-sign-on server library.}
-    gem.description = %Q{Kennedy is out for Castronaut. A simple single-sign-on server library.}
+    gem.summary = %Q{A simple single-sign-on client and server library.}
+    gem.description = %Q{Kennedy is out for Castronaut. A simple single-sign-on client and server library.}
     gem.email = "gabriel.gironda@gmail.com"
     gem.homepage = "http://github.com/gabrielg/kennedy"
     gem.authors = ["gabrielg"]
