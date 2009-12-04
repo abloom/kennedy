@@ -82,6 +82,42 @@ once a client has been authenticated.
   <ul class="summary">
     
       <li class="public ">
+  <span class="summary_signature"><a title="#authenticate (instance method)" href="#authenticate-instance_method">- (true) <strong>authenticate</strong>(args = {}) </a>
+  
+  </span>
+  
+  
+  
+  
+
+  
+    <span class="summary_desc">
+A boolean indication of whether authentication was successful or not.
+
+</span>
+  
+</li>
+
+    
+      <li class="public ">
+  <span class="summary_signature"><a title="#generate_ticket (instance method)" href="#generate_ticket-instance_method">- (Kennedy::Ticket) <strong>generate_ticket</strong>(args = {}) </a>
+  
+  </span>
+  
+  
+  
+  
+
+  
+    <span class="summary_desc">
+A Kennedy::Ticket object.
+
+</span>
+  
+</li>
+
+    
+      <li class="public ">
   <span class="summary_signature"><a title="#initialize (instance method)" href="#initialize-instance_method">- (Granter) <strong>initialize</strong>(args = {}) </a>
   
   </span>
@@ -221,13 +257,19 @@ a new instance of <tt>Granter</tt>
       <pre class="lines">
 
 
-10
-11</pre>
+12
+13
+14
+15
+16</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/kennedy/granter.rb', line 10</span>
+      <pre class="code"><span class="info file"># File 'lib/kennedy/granter.rb', line 12</span>
 
 <span class='def def kw'>def</span> <span class='initialize identifier id'>initialize</span><span class='lparen token'>(</span><span class='args identifier id'>args</span> <span class='assign token'>=</span> <span class='lbrace token'>{</span><span class='rbrace token'>}</span><span class='rparen token'>)</span>
+  <span class='@iv ivar id'>@iv</span> <span class='assign token'>=</span> <span class='args identifier id'>args</span><span class='lbrack token'>[</span><span class='symbol val'>:iv</span><span class='rbrack token'>]</span> <span class='orop op'>||</span> <span class='raise identifier id'>raise</span><span class='lparen token'>(</span><span class='ArgumentError constant id'>ArgumentError</span><span class='comma token'>,</span> <span class='string val'>&quot;Encryption IV must be given as :iv&quot;</span><span class='rparen token'>)</span>
+  <span class='@passphrase ivar id'>@passphrase</span> <span class='assign token'>=</span> <span class='args identifier id'>args</span><span class='lbrack token'>[</span><span class='symbol val'>:passphrase</span><span class='rbrack token'>]</span> <span class='orop op'>||</span> <span class='raise identifier id'>raise</span><span class='lparen token'>(</span><span class='ArgumentError constant id'>ArgumentError</span><span class='comma token'>,</span> <span class='string val'>&quot;Encryption passphrase must be given as :passphrase&quot;</span><span class='rparen token'>)</span>
+  <span class='@backend ivar id'>@backend</span> <span class='assign token'>=</span> <span class='args identifier id'>args</span><span class='lbrack token'>[</span><span class='symbol val'>:backend</span><span class='rbrack token'>]</span> <span class='orop op'>||</span> <span class='raise identifier id'>raise</span><span class='lparen token'>(</span><span class='ArgumentError constant id'>ArgumentError</span><span class='comma token'>,</span> <span class='string val'>&quot;Authentication backend must be given as :backend&quot;</span><span class='rparen token'>)</span>
 <span class='end end kw'>end</span>
 </pre>
     </td>
@@ -238,10 +280,241 @@ a new instance of <tt>Granter</tt>
 </div>
 
 
+  <div id="method_details">
+    <h2>Method Details</h2>
+    
+      <div class="method_details first">
+  <p class="signature first" id="authenticate-instance_method">
+  
+    - (<tt>true</tt>) <strong>authenticate</strong>(args = {}) 
+  
+
+  
+</p><div class="docstring">
+  <div class="discussion">
+    <p>
+A boolean indication of whether authentication was successful or not
+</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <h3>Parameters:</h3>
+<ul class="param">
+  
+    <li>
+      
+        <span class='type'>(<tt>Hash</tt>)</span>
+      
+      
+        <span class='name'>args</span>
+      
+      
+        <em class="default">(defaults to: <tt>{}</tt>)</em>
+      
+      
+        &mdash;
+        
+The arguments to authenticate with
+
+
+      
+    </li>
+  
+</ul>
+
+  
+    
+    
+    <h3>Options Hash (<tt>args</tt>):</h3>
+    <ul class="option">
+      
+        <li>
+          <span class="type">(<tt>String</tt>)</span>
+          <span class="name">:identifier</span>
+          <span class="default">
+            
+              <span class="na">N/A</span>
+            
+          </span>
+          &mdash;
+The identifier (email address, for example) to use for authentication
+
+
+        </tr>
+      
+        <li>
+          <span class="type">(<tt>String</tt>)</span>
+          <span class="name">:password</span>
+          <span class="default">
+            
+              <span class="na">N/A</span>
+            
+          </span>
+          &mdash;
+The password to use for authentication
+
+
+        </tr>
+      
+    </ul>
+  
+<h3>Returns:</h3>
+<ul class="return">
+  
+    <li>
+      
+        <span class='type'>(<tt>true</tt>, <tt>false</tt>)</span>
+      
+      
+      
+      
+        &mdash;
+        
+A boolean indication of whether authentication was successful or not
+
+
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+22
+23
+24</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/kennedy/granter.rb', line 22</span>
+
+<span class='def def kw'>def</span> <span class='authenticate identifier id'>authenticate</span><span class='lparen token'>(</span><span class='args identifier id'>args</span> <span class='assign token'>=</span> <span class='lbrace token'>{</span><span class='rbrace token'>}</span><span class='rparen token'>)</span>
+  <span class='notop op'>!</span><span class='notop op'>!</span><span class='@backend ivar id'>@backend</span><span class='dot token'>.</span><span class='authenticate identifier id'>authenticate</span><span class='lparen token'>(</span><span class='args identifier id'>args</span><span class='lbrack token'>[</span><span class='symbol val'>:identifier</span><span class='rbrack token'>]</span><span class='comma token'>,</span> <span class='args identifier id'>args</span><span class='lbrack token'>[</span><span class='symbol val'>:password</span><span class='rbrack token'>]</span><span class='rparen token'>)</span>
+<span class='end end kw'>end</span>
+</pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <p class="signature " id="generate_ticket-instance_method">
+  
+    - (<tt><a title="Kennedy::Ticket" href="Ticket.html">Kennedy::Ticket</a></tt>) <strong>generate_ticket</strong>(args = {}) 
+  
+
+  
+</p><div class="docstring">
+  <div class="discussion">
+    <p>
+A Kennedy::Ticket object
+</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <h3>Parameters:</h3>
+<ul class="param">
+  
+    <li>
+      
+        <span class='type'>(<tt>Hash</tt>)</span>
+      
+      
+        <span class='name'>args</span>
+      
+      
+        <em class="default">(defaults to: <tt>{}</tt>)</em>
+      
+      
+        &mdash;
+        
+The arguments to generate the ticket with
+
+
+      
+    </li>
+  
+</ul>
+
+  
+    
+    
+    <h3>Options Hash (<tt>args</tt>):</h3>
+    <ul class="option">
+      
+        <li>
+          <span class="type">(<tt>String</tt>)</span>
+          <span class="name">:identifier</span>
+          <span class="default">
+            
+              <span class="na">N/A</span>
+            
+          </span>
+          &mdash;
+The identifier (email address, for example) the ticket grants access for
+
+
+        </tr>
+      
+    </ul>
+  
+<h3>Returns:</h3>
+<ul class="return">
+  
+    <li>
+      
+        <span class='type'>(<tt><a title="Kennedy::Ticket" href="Ticket.html">Kennedy::Ticket</a></tt>)</span>
+      
+      
+      
+      
+        &mdash;
+        
+A Kennedy::Ticket object
+
+
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+29
+30
+31
+32</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/kennedy/granter.rb', line 29</span>
+
+<span class='def def kw'>def</span> <span class='generate_ticket identifier id'>generate_ticket</span><span class='lparen token'>(</span><span class='args identifier id'>args</span> <span class='assign token'>=</span> <span class='lbrace token'>{</span><span class='rbrace token'>}</span><span class='rparen token'>)</span>
+  <span class='identifier identifier id'>identifier</span> <span class='assign token'>=</span> <span class='args identifier id'>args</span><span class='lbrack token'>[</span><span class='symbol val'>:identifier</span><span class='rbrack token'>]</span> <span class='orop op'>||</span> <span class='raise identifier id'>raise</span><span class='lparen token'>(</span><span class='ArgumentError constant id'>ArgumentError</span><span class='comma token'>,</span> <span class='string val'>&quot;An identifier must be given as :identifier&quot;</span><span class='rparen token'>)</span>
+  <span class='new_ticket identifier id'>new_ticket</span><span class='lparen token'>(</span><span class='identifier identifier id'>identifier</span><span class='rparen token'>)</span>
+<span class='end end kw'>end</span>
+</pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
 </div>
     
     <div id="footer">
-  Generated on Fri Dec  4 12:59:21 2009 by 
+  Generated on Fri Dec  4 14:38:03 2009 by 
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool">yard</a>
   0.4.0 (ruby-1.8.7).
 </div>

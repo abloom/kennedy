@@ -31,16 +31,16 @@ task :test => :check_dependencies
 
 task :default => :test
 
-task :generate_readme_rdoc do
+task :generate_main_rdoc do
   require 'maruku'
   content = File.read('README.markdown')
   doc = Maruku.new(content)
-  File.open(File.join(File.dirname(__FILE__), 'README.rdoc'), 'w') { |f| f << doc.to_html } 
+  File.open(File.join(File.dirname(__FILE__), 'MAIN.rdoc'), 'w') { |f| f << doc.to_html } 
 end
 
 begin
   require 'yard'
-  YARD::Rake::YardocTask.new(:yard => :generate_readme_rdoc)
+  YARD::Rake::YardocTask.new(:yard => :generate_main_rdoc)
 rescue LoadError
   task :yardoc do
     abort "YARD is not available. In order to run yardoc, you must: sudo gem install yard"
