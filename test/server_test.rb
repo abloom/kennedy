@@ -12,6 +12,32 @@ context "kennedy server" do
     Kennedy::Server.create(:encryption => {:iv => Digest::SHA1.hexdigest("what"), :passphrase => Digest::SHA1.hexdigest("qhat")},
                            :backend    => new_backend)
   end
+  
+  context "delete to /session" do
+    setup do
+      @server = Rack::MockRequest.new(new_server[])
+    end
+
+    should "not allow non-ssl connections" do
+      @server.delete('/session').status
+    end.equals(403)
+
+    context "via ssl" do
+      setup do
+        @server = SSLMockRequest.new(new_server[])
+        @server.delete('/session', 'CONTENT_TYPE' => 'application/json')
+      end
+      
+      should "return a 200" do
+        topic.status
+      end.equals(200)
+
+      should "return success" do
+        JSON.parse(topic.body)['success']
+      end.equals('session_destroyed')
+
+    end
+  end
 
   context "post to /session" do
     setup do

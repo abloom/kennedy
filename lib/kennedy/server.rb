@@ -24,7 +24,11 @@ module Kennedy
     end
     
     before do
-      @json = JSON.parse(request.body.read)
+      begin
+        @json = JSON.parse(request.body.read)
+      rescue
+        @json = {}
+      end
     end
 
     post '/session' do
@@ -37,7 +41,12 @@ module Kennedy
         [201, {'success' => 'session_created'}.to_json]
       end
     end
-  
+    
+    delete '/session' do
+      request.session.clear
+      [200, {'success' => 'session_destroyed'}.to_json]
+    end
+
   private
     
     def granter
