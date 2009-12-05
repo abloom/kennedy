@@ -15,6 +15,8 @@ begin
     gem.add_development_dependency "yard"
     gem.add_dependency "ruby-net-ldap"
     gem.add_dependency "json"
+    gem.add_dependency "sinatra"
+    gem.add_dependency "rack"
   end
   Jeweler::GemcutterTasks.new
 rescue LoadError

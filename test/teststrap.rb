@@ -1,6 +1,7 @@
 require 'rubygems'
 require 'riot'
 require 'kennedy'
+require 'rack'
 
 class StubBackend
   attr_reader :credentials
@@ -20,4 +21,14 @@ class StubLDAP
     @bind_as_arguments = args
     @return_val
   end
+end
+
+class SSLMockRequest < Rack::MockRequest
+  
+  def self.env_for(*args)
+    env = super(*args)
+    env["rack.url_scheme"] = "https"
+    env
+  end
+
 end
