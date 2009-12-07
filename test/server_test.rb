@@ -98,5 +98,57 @@ context "kennedy server" do
 
   end # post to /session
   
+  context "get to /session" do
+    setup do
+      @server = Rack::MockRequest.new(new_server[])
+    end
+
+    should "not allow non-ssl connections" do
+      @server.get('/session').status
+    end.equals(403)
+    
+    context "via ssl" do  
+      setup do
+        @server = SSLMockRequest.new(new_server[])
+      end
+      
+      should "not allow non-JSON requests" do
+        @server.get('/session').status
+      end.equals(415)
+      
+      context "when already logged in" do
+        setup do
+          response = @server.post('/session', 'CONTENT_TYPE' => 'application/json', :input => {'credentials' => {'identifier' => 'foo', 'password' => 'bar'}}.to_json)
+          cookie = response.headers['Set-Cookie'].split(";").first
+          @server.get('/session', 'CONTENT_TYPE' => 'application/json', 'HTTP_COOKIE' => cookie)
+        end
+        
+        should "return json" do
+          topic.content_type
+        end.equals("application/json")
+
+        should "respond with a ticket" do
+          JSON.parse(topic.body)['ticket']
+        end.kind_of(String)
+
+      end # when already logged in
+
+      context "when not logged in" do
+        setup do
+          @server.get('/session', 'CONTENT_TYPE' => 'application/json')
+        end
+        
+        should "return json" do
+          topic.content_type
+        end.equals("application/json")
+        
+        should "return a 401" do
+          topic.status
+        end.equals(401)
+      
+      end # when not logged in
+    end # via ssl
+  end # get to /session
+
 end
 

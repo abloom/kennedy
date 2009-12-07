@@ -1,5 +1,6 @@
 require 'sinatra/base'
 require 'json'
+require 'base64'
 
 module Kennedy
   class Server < Sinatra::Base
@@ -28,6 +29,16 @@ module Kennedy
         @json = JSON.parse(request.body.read)
       rescue
         @json = {}
+      end
+    end
+    
+    get '/session' do
+      content_type "application/json"
+      if session['identifier']
+        ticket = granter.generate_ticket(:identifier => session['identifier'])
+        [200, {'ticket' => Base64.encode64(ticket.to_encrypted)}.to_json]
+      else
+        [401, {'error' => 'authentication_required'}.to_json]
       end
     end
 
