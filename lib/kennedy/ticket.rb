@@ -8,7 +8,7 @@ module Kennedy
   # A ticket represents a time-constrained period in which an authenticated
   # person can access a service
   class Ticket
-    DefaultExpiry = 120 # In seconds
+    DefaultExpiry = 30 # In seconds
     attr_reader :identifier
 
     class << self
