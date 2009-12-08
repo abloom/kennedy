@@ -7,6 +7,13 @@ module Kennedy
   class Server < Sinatra::Base
     disable :session
     
+    # Creates a new subclass of Kennedy::Server with the given options
+    # @param [Hash] opts The options to use when building the subclass
+    # @option opts [Hash]   :encryption     The IV and passphrase to use when generating tickets, given as
+    #                                       :iv and :passphrase keys in a Hash.
+    # @option opts [Object] :backend        An instance of a backend to use for authentication.
+    # @option opts [String] :session_secret A secret for Rack::Session::Cookie to use when generating session
+    #                                       cookies.
     def self.create(opts = {})
       sc = Class.new(self)
       sc.instance_eval do
@@ -16,19 +23,22 @@ module Kennedy
         self
       end
     end
-
+    
+    # Ensures all connections come in over SSL
     before do
       unless (request.env['HTTP_X_FORWARDED_PROTO'] || request.env['rack.url_scheme']) == 'https'
         halt 403, "Only SSL connections are accepted."
       end
     end
     
+    # Ensures all connections come in requesting JSON
     before do
       unless request.content_type == 'application/json'
         halt 415, "Only JSON requests are accepted."
       end
     end
     
+    # Parses request body as JSON
     before do
       begin
         @json = JSON.parse(request.body.read)
@@ -37,6 +47,9 @@ module Kennedy
       end
     end
     
+    # Takes incoming requests with a 'ticket' property in the JSON body and decrypts the ticket,
+    # returning an identifier as the 'identifier' property in the JSON response body if the
+    # ticket is valid and unexpired.
     post "/validation_request" do
       content_type "application/json"
       begin
@@ -52,6 +65,8 @@ module Kennedy
       end
     end
 
+    # Takes incoming requests and generates an encrypted and Base64 encoded ticket in the 'ticket'
+    # property of the JSON response if the user has a valid session.
     get '/session' do
       content_type "application/json"
       if session['identifier']
@@ -61,7 +76,9 @@ module Kennedy
         [401, {'error' => 'authentication_required'}.to_json]
       end
     end
-
+    
+    # Creates a session if authentication with the given credentials passed as 'identifier' and
+    # 'password' in the JSON body is successful.
     post '/session' do
       credentials = @json['credentials']
       content_type "application/json"
@@ -73,6 +90,7 @@ module Kennedy
       end
     end
     
+    # Destroys an existing session.
     delete '/session' do
       request.session.clear
       [200, {'success' => 'session_destroyed'}.to_json]
