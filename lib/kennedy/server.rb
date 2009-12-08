@@ -32,6 +32,21 @@ module Kennedy
       end
     end
     
+    post "/validation_request" do
+      content_type "application/json"
+      begin
+        encrypted_ticket = Base64.decode64(@json['ticket'])
+        ticket = granter.read_ticket(:data => encrypted_ticket)
+        if ticket.expired?
+          [406, {'error' => 'expired_ticket'}.to_json]
+        else
+          [200, {'identifier' => ticket.identifier}.to_json]
+        end
+      rescue => e
+        [406, {'error' => 'bad_ticket'}.to_json]
+      end
+    end
+
     get '/session' do
       content_type "application/json"
       if session['identifier']

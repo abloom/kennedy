@@ -59,6 +59,35 @@ context "kennedy granter" do
 
     end # with default expiry time
   end   # generating a ticket for a service
+  
+  context "reading an encrypted ticket" do
+    setup do
+      @granter = Kennedy::Granter.new(:iv         => Digest::SHA1.hexdigest(Time.now.to_i.to_s),
+                                      :passphrase => Digest::SHA1.hexdigest(Time.now.to_i.to_s),
+                                      :backend    => @backend = StubBackend.new)
+    end
+    
+    should "require data to read a ticket" do
+      @granter.read_ticket
+    end.raises(ArgumentError, "Data must be given as :data")
+
+    context "with gibberish data" do
+      should "raise an exception" do
+        @granter.read_ticket(:data => "bzzt")
+      end.raises(Kennedy::BadTicketException)
+    end
+
+    context "with valid data" do
+      setup do
+        encrypted_ticket = @granter.generate_ticket(:identifier => "foo@example.com").to_encrypted
+        @granter.read_ticket(:data => encrypted_ticket)
+      end
+      
+      should "be a kennedy ticket" do
+        topic
+      end.kind_of(Kennedy::Ticket)
+    end
+  end # reading an encrypted ticket
 
 end
 

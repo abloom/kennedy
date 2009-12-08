@@ -3,13 +3,15 @@ require 'kennedy/server'
 require 'digest/sha1'
 
 context "kennedy server" do
+  iv =  Digest::SHA1.hexdigest("what")
+  passphrase =  Digest::SHA1.hexdigest("qhat")
 
   new_backend = lambda do
     StubBackend.new
   end
 
   new_server = lambda do 
-    Kennedy::Server.create(:encryption => {:iv => Digest::SHA1.hexdigest("what"), :passphrase => Digest::SHA1.hexdigest("qhat")},
+    Kennedy::Server.create(:encryption => {:iv => iv, :passphrase => passphrase},
                            :backend    => new_backend)
   end
   
@@ -149,6 +151,84 @@ context "kennedy server" do
       end # when not logged in
     end # via ssl
   end # get to /session
+  
+  context "post to /validation_request" do
+    setup do
+      @server = Rack::MockRequest.new(new_server[])
+    end
 
+    should "not allow non-ssl connection" do
+      @server.post('/validation_request').status
+    end.equals(403)
+    
+    context "via ssl" do
+      setup do
+        @server = SSLMockRequest.new(new_server[])
+      end
+
+      should "not allow non-JSON requests" do
+        @server.post('/validation_request').status
+      end.equals(415)
+      
+      context "with a valid ticket" do
+        setup do
+          granter = Kennedy::Granter.new(:iv => iv, :passphrase => passphrase, :backend => StubBackend.new)
+          ticket = granter.generate_ticket(:identifier => "foo@example.com")
+          @server.post('/validation_request', 'CONTENT_TYPE' => 'application/json', :input => {'ticket' => Base64.encode64(ticket.to_encrypted)}.to_json)
+        end
+
+        should "return json" do
+          topic.content_type
+        end.equals("application/json")
+
+        should "return a 200" do
+          topic.status
+        end.equals(200)
+        
+        should "return an identifier" do
+          JSON.parse(topic.body)['identifier']
+        end.equals('foo@example.com')
+
+      end
+      
+      context "with gibberish" do
+        setup do
+          @server.post('/validation_request', 'CONTENT_TYPE' => 'application/json', :input => {'ticket' => 'bzzt'}.to_json)
+        end
+
+        should "return json" do
+          topic.content_type
+        end.equals("application/json")
+
+        should "return a 406" do
+          topic.status
+        end.equals(406)
+        
+        should "return an error" do
+          JSON.parse(topic.body)['error']
+        end.equals('bad_ticket')
+
+      end
+
+      context "with an expired ticket" do
+        setup do
+          ticket = Kennedy::Ticket.create(:identifier => "foo@example.com", :iv => iv, :expiry => -30, :passphrase => passphrase)
+          @server.post('/validation_request', 'CONTENT_TYPE' => 'application/json', :input => {'ticket' => Base64.encode64(ticket.to_encrypted)}.to_json)
+        end
+        
+        should "return json" do
+          topic.content_type
+        end.equals("application/json")
+
+        should "return a 406" do
+          topic.status
+        end.equals(406)
+
+        should "return an error" do
+          JSON.parse(topic.body)['error']
+        end.equals('expired_ticket')
+      end
+    end # via ssl
+  end
 end
 

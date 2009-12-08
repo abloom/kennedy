@@ -32,8 +32,17 @@ module Kennedy
       identifier = args[:identifier] || raise(ArgumentError, "An identifier must be given as :identifier")
       new_ticket(identifier)
     end
-  
+    
+    def read_ticket(args = {})
+      data = args[:data] || raise(ArgumentError, "Data must be given as :data")
+      decrypt_ticket(args[:data])
+    end
+
   private
+
+    def decrypt_ticket(data)
+      Kennedy::Ticket.from_encrypted(:data => data, :iv => @iv, :passphrase => @passphrase)
+    end
 
     def new_ticket(identifier)
       Kennedy::Ticket.create(:identifier => identifier, :iv => @iv, :passphrase => @passphrase)
