@@ -1,14 +1,19 @@
 require 'sinatra/base'
 require 'json'
 require 'base64'
+require 'rack/session/cookie'
 
 module Kennedy
   class Server < Sinatra::Base
-    set :sessions, true
+    disable :session
     
     def self.create(opts = {})
-      Class.new(self) do
+      sc = Class.new(self)
+      sc.instance_eval do
         opts.each { |k,v| set k.to_sym, v }
+        raise ArgumentError, "A session secret must be set with :session_secret" unless defined?(session_secret)
+        add_cookie_middleware
+        self
       end
     end
 
@@ -74,6 +79,10 @@ module Kennedy
     end
 
   private
+
+    def self.add_cookie_middleware
+      use Rack::Session::Cookie, :secret => session_secret
+    end
     
     def granter
       @granter ||= Kennedy::Granter.new(:iv => encryption[:iv], :passphrase => encryption[:passphrase],

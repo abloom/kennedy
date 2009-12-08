@@ -5,6 +5,7 @@ require 'digest/sha1'
 context "kennedy server" do
   iv =  Digest::SHA1.hexdigest("what")
   passphrase =  Digest::SHA1.hexdigest("qhat")
+  session_secret = "foobarbaz"
 
   new_backend = lambda do
     StubBackend.new
@@ -12,9 +13,15 @@ context "kennedy server" do
 
   new_server = lambda do 
     Kennedy::Server.create(:encryption => {:iv => iv, :passphrase => passphrase},
-                           :backend    => new_backend)
+                           :backend    => new_backend, :session_secret => "foobarbaz")
   end
   
+  should "use tamper-proof cookies" do
+    new_server[].middleware.detect do |mw|
+      mw[0] == Rack::Session::Cookie && !mw[1][0][:secret].nil?
+    end
+  end
+
   context "delete to /session" do
     setup do
       @server = Rack::MockRequest.new(new_server[])
@@ -94,7 +101,11 @@ context "kennedy server" do
         should "return success" do
           JSON.parse(topic.body)['success']
         end.equals('session_created')
-
+        
+        should "set a session cookie" do
+          topic.headers['Set-Cookie']
+        end.matches(/rack\.session=/)
+        
       end
     end 
 
