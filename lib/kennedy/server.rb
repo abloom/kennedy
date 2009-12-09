@@ -17,9 +17,15 @@ module Kennedy
       end
     end
 
-    before do
-      unless (request.env['HTTP_X_FORWARDED_PROTO'] || request.env['rack.url_scheme']) == 'https'
-        halt 403, "Only SSL connections are accepted."
+    configure :development do
+      require 'ruby-debug'
+    end
+    
+    configure :production do
+      before do
+        unless (request.env['HTTP_X_FORWARDED_PROTO'] || request.env['rack.url_scheme']) == 'https'
+          halt 403, "Only SSL connections are accepted."
+        end
       end
     end
     
