@@ -14,12 +14,15 @@ module Kennedy
     # @option opts [Object] :backend        An instance of a backend to use for authentication.
     # @option opts [String] :session_secret A secret for Rack::Session::Cookie to use when generating session
     #                                       cookies.
+    # @option opts [Hash]   :api_keys       A hash of key-value pairs to use as API users/keys with HTTP basic
+    #                                       authentication
     def self.create(opts = {})
       sc = Class.new(self)
       sc.instance_eval do
         opts.each { |k,v| set k.to_sym, v }
         raise ArgumentError, "A session secret must be set with :session_secret" unless defined?(session_secret)
         add_cookie_middleware
+        set :api_keys, (defined?(api_keys) ? api_keys : {})
         self
       end
     end
@@ -52,6 +55,7 @@ module Kennedy
     # ticket is valid and unexpired.
     post "/validation_request" do
       content_type "application/json"
+      require_api_authentication
       begin
         encrypted_ticket = Base64.decode64(@json['ticket'])
         ticket = granter.read_ticket(:data => encrypted_ticket)
@@ -97,6 +101,35 @@ module Kennedy
     end
 
   private
+    
+    def auth
+      @auth ||= Rack::Auth::Basic::Request.new(request.env)
+    end
+
+    def authorized?
+      request.env['REMOTE_USER']
+    end
+    
+    def unauthorized!(realm = "Kennedy")
+      headers 'WWW-Authenticate' => %(Basic realm="#{realm}")
+      throw :halt, [401, {'error' => 'authentication_required'}.to_json]
+    end
+
+    def bad_request!
+      throw :halt, [400, {'error' => 'bad_request'}.to_json]
+    end
+    
+    def authorize(username, password)
+      api_keys.has_key?(username) && api_keys[username] == password
+    end
+
+    def require_api_authentication
+      return if authorized?
+      unauthorized! unless auth.provided?
+      bad_request! unless auth.basic?
+      unauthorized! unless authorize(*auth.credentials)
+      request.env['REMOTE_USER'] = auth.username
+    end
 
     def self.add_cookie_middleware
       use Rack::Session::Cookie, :secret => session_secret
@@ -113,6 +146,10 @@ module Kennedy
 
     def backend
       self.class.backend
+    end
+    
+    def api_keys
+      self.class.api_keys
     end
 
   end # Server
