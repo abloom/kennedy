@@ -2,6 +2,7 @@ require 'sinatra/base'
 require 'json'
 require 'base64'
 require 'rack/session/cookie'
+require 'kennedy'
 
 module Kennedy
   class Server < Sinatra::Base
@@ -16,6 +17,7 @@ module Kennedy
     #                                       cookies.
     # @option opts [Hash]   :api_keys       A hash of key-value pairs to use as API users/keys with HTTP basic
     #                                       authentication
+    #                    
     def self.create(opts = {})
       sc = Class.new(self)
       sc.instance_eval do
@@ -23,12 +25,13 @@ module Kennedy
         raise ArgumentError, "A session secret must be set with :session_secret" unless defined?(session_secret)
         add_cookie_middleware
         set :api_keys, (defined?(api_keys) ? api_keys : {})
-        self
+        set :require_ssl, (defined?(require_ssl) ? require_ssl : true)
       end
     end
     
     # Ensures all connections come in over SSL
     before do
+      next unless require_ssl?
       unless (request.env['HTTP_X_FORWARDED_PROTO'] || request.env['rack.url_scheme']) == 'https'
         halt 403, "Only SSL connections are accepted."
       end
@@ -150,6 +153,10 @@ module Kennedy
     
     def api_keys
       self.class.api_keys
+    end
+    
+    def require_ssl?
+      !!options.require_ssl
     end
 
   end # Server

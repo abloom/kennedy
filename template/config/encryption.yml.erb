@@ -1,0 +1,2 @@
+iv: <%= Digest::SHA1.hexdigest("#{Time.now}#{Time.now.usec}") %>
+passphrase: <%= Digest::SHA1.hexdigest("#{Time.now}#{Time.now.usec}") %>
