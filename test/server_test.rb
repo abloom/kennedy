@@ -1,6 +1,7 @@
 require 'teststrap'
 require 'kennedy/server'
 require 'digest/sha1'
+require 'base64'
 
 context "kennedy server" do
   iv =  Digest::SHA1.hexdigest("what")
@@ -13,7 +14,12 @@ context "kennedy server" do
 
   new_server = lambda do 
     Kennedy::Server.create(:encryption => {:iv => iv, :passphrase => passphrase},
-                           :backend    => new_backend, :session_secret => "foobarbaz")
+                           :backend    => new_backend, :session_secret => "foobarbaz",
+                           :api_keys => {'foo@example.com' => 'password'})
+  end
+
+  encode_credentials = lambda do |username,password|
+    "Basic " + Base64.encode64("#{username}:#{password}")
   end
   
   should "use tamper-proof cookies" do
@@ -180,12 +186,44 @@ context "kennedy server" do
       should "not allow non-JSON requests" do
         @server.post('/validation_request').status
       end.equals(415)
-      
+     
+      context "with no API key" do
+        setup do
+          @server.post('/validation_request', 'CONTENT_TYPE' => 'application/json', :input => {'ticket' => '123'}.to_json)
+        end
+        
+        should "return a 401" do
+          topic.status
+        end.equals(401)
+
+        should "return an error" do
+          JSON.parse(topic.body)['error']
+        end.equals('authentication_required')
+      end
+
+      context "with a bad API key" do
+
+        setup do
+          @server.post('/validation_request', 'CONTENT_TYPE' => 'application/json', 'HTTP_AUTHORIZATION'=> encode_credentials['foo@example.com', 'badpassword'],
+                       :input => {'ticket' => '123'}.to_json)
+        end
+        
+        should "return a 401" do
+          topic.status
+        end.equals(401)
+
+        should "return an error" do
+          JSON.parse(topic.body)['error']
+        end.equals('authentication_required')
+
+      end
+
       context "with a valid ticket" do
         setup do
           granter = Kennedy::Granter.new(:iv => iv, :passphrase => passphrase, :backend => StubBackend.new)
           ticket = granter.generate_ticket(:identifier => "foo@example.com")
-          @server.post('/validation_request', 'CONTENT_TYPE' => 'application/json', :input => {'ticket' => Base64.encode64(ticket.to_encrypted)}.to_json)
+          @server.post('/validation_request', 'CONTENT_TYPE' => 'application/json', 'HTTP_AUTHORIZATION'=> encode_credentials['foo@example.com', 'password'],
+                       :input => {'ticket' => Base64.encode64(ticket.to_encrypted)}.to_json)
         end
 
         should "return json" do
@@ -204,7 +242,8 @@ context "kennedy server" do
       
       context "with gibberish" do
         setup do
-          @server.post('/validation_request', 'CONTENT_TYPE' => 'application/json', :input => {'ticket' => 'bzzt'}.to_json)
+          @server.post('/validation_request', 'CONTENT_TYPE' => 'application/json', 'HTTP_AUTHORIZATION'=> encode_credentials['foo@example.com', 'password'],
+                       :input => {'ticket' => 'bzzt'}.to_json)
         end
 
         should "return json" do
@@ -224,7 +263,8 @@ context "kennedy server" do
       context "with an expired ticket" do
         setup do
           ticket = Kennedy::Ticket.create(:identifier => "foo@example.com", :iv => iv, :expiry => -30, :passphrase => passphrase)
-          @server.post('/validation_request', 'CONTENT_TYPE' => 'application/json', :input => {'ticket' => Base64.encode64(ticket.to_encrypted)}.to_json)
+          @server.post('/validation_request', 'CONTENT_TYPE' => 'application/json', 'HTTP_AUTHORIZATION'=> encode_credentials['foo@example.com', 'password'],
+                       :input => {'ticket' => Base64.encode64(ticket.to_encrypted)}.to_json)
         end
         
         should "return json" do

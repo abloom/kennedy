@@ -136,6 +136,21 @@ A new instance of <tt>Granter</tt>.
 </li>
 
     
+      <li class="public ">
+  <span class="summary_signature"><a title="#read_ticket (instance method)" href="#read_ticket-instance_method">- (Object) <strong>read_ticket</strong>(args = {}) </a>
+  
+  </span>
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"></span>
+  
+</li>
+
+    
   </ul>
 
 <div id="constructor_details">
@@ -510,12 +525,43 @@ A Kennedy::Ticket object
 </table>
 </div>
     
+      <div class="method_details ">
+  <p class="signature " id="read_ticket-instance_method">
+  
+    - (<tt>Object</tt>) <strong>read_ticket</strong>(args = {}) 
+  
+
+  
+</p><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+36
+37
+38
+39</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/kennedy/granter.rb', line 36</span>
+
+<span class='def def kw'>def</span> <span class='read_ticket identifier id'>read_ticket</span><span class='lparen token'>(</span><span class='args identifier id'>args</span> <span class='assign token'>=</span> <span class='lbrace token'>{</span><span class='rbrace token'>}</span><span class='rparen token'>)</span>
+  <span class='data identifier id'>data</span> <span class='assign token'>=</span> <span class='args identifier id'>args</span><span class='lbrack token'>[</span><span class='symbol val'>:data</span><span class='rbrack token'>]</span> <span class='orop op'>||</span> <span class='raise identifier id'>raise</span><span class='lparen token'>(</span><span class='ArgumentError constant id'>ArgumentError</span><span class='comma token'>,</span> <span class='string val'>&quot;Data must be given as :data&quot;</span><span class='rparen token'>)</span>
+  <span class='decrypt_ticket identifier id'>decrypt_ticket</span><span class='lparen token'>(</span><span class='args identifier id'>args</span><span class='lbrack token'>[</span><span class='symbol val'>:data</span><span class='rbrack token'>]</span><span class='rparen token'>)</span>
+<span class='end end kw'>end</span>
+</pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
   </div>
 
 </div>
     
     <div id="footer">
-  Generated on Fri Dec  4 15:35:53 2009 by 
+  Generated on Tue Dec  8 16:39:39 2009 by 
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool">yard</a>
   0.4.0 (ruby-1.8.7).
 </div>

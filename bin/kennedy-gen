@@ -1,0 +1,13 @@
+#!/usr/bin/env ruby
+require 'pathname'
+$: << (Pathname(__FILE__).parent.parent + "lib").expand_path.to_s
+
+require 'kennedy/generator'
+generator = Kennedy::Generator.new
+begin
+  generator.run(ARGV)
+  exit 0
+rescue => e
+  puts e.inspect
+  exit 1
+end
