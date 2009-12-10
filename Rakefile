@@ -4,7 +4,7 @@ require 'rake'
 begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
-    gem.executables << "bin/kennedy-gen"
+    gem.executables << "kennedy-gen"
     gem.name = "kennedy"
     gem.summary = %Q{A simple single-sign-on client and server library.}
     gem.description = %Q{Kennedy is out for Castronaut. A simple single-sign-on client and server library.}
